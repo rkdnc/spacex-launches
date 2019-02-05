@@ -1,0 +1,25 @@
+schema {
+  query: Query
+}
+
+type LaunchComments {
+  author: String
+  body: String
+  date: AWSDateTime
+  flightNumber: Int
+  id: ID!
+  link: AWSURL
+}
+
+type LaunchCommentsConnection {
+  items: [LaunchComments]
+  nextToken: String
+}
+
+type Query {
+  launchCommentsByFlightNumber(
+    flightNumber: Int!
+    limit: Int
+    nextToken: String
+  ): LaunchCommentsConnection
+}
