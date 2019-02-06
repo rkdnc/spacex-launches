@@ -75,9 +75,9 @@ function Launches({ launches }) {
     <ul data-testid="launches" className="timeline timeline-variant">
       {Object.keys(launchesByDate).map(launchDate => (
         <span key={launchDate}>
-          <li className="timeline-month">{launchDate}</li>
+          <li key={launchDate} className="timeline-month">{launchDate}</li>
           {launchesByDate[launchDate].map(launch => (
-            <Launch key={launch.flight_number} launch={launch} />
+            <Launch key={launch.id} launch={launch} />
           ))}
         </span>
       ))}
@@ -116,6 +116,7 @@ function Launch({ launch }) {
 
 export default function App() {
   const { data, loading } = useGraphQL(launchesQuery);
+
 
   return (
     <div>
