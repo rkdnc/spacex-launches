@@ -86,33 +86,12 @@ function Launches({ launches }) {
 }
 
 function Launch({ launch }) {
-
-  const [flightNumber, setFlightNumber] = useState(1)
   const launchIcon = launch.launch_success ? (
     <i className="icon mdi mdi-rocket" />
   ) : (
     <i className="icon mdi mdi-bomb" />
   );
 
-  async function query() {
-    const endpoint = 'https://pb3c6uzk5zhrzbcuhssogcpq74.appsync-api.us-east-1.amazonaws.com/graphql'
-
-    const graphQLClient = new GraphQLClient(endpoint, {
-      headers: {
-        'x-api-key': 'da2-tadwcysgfbgzrjsfmuf7t4huui'
-      }
-    })
-
-    const query = `{
-      LaunchCommentsByFlightNumber {
-        flightNumber: {flightNumber}
-      }
-    }`
-
-    const data = await graphQLClient.request(query)
-    console.log(JSON.stringify(data))
-  }
-  query()
   return (
     <li className="timeline-item timeline-item-detailed right">
       <div className="timeline-content timeline-type file">
@@ -133,12 +112,59 @@ function Launch({ launch }) {
           YouTube will not allow any videos to be played that aren't the embedded link,
           and the SpaceX API only returnd the regular video title.
           We have to replace 'watch?v=' with 'embed/' or just parse the ID from the query. */}
-          <div className="comment-header">View Comments</div>
+          <Comments flightNumber={launch.id} />
         </div>
       </div>
     </li>
   );
 }
+
+// Create a new Component for comments
+/* Component will live inside Launch component, will take the flight number from the parent and query the API for the corresponding comments */
+
+function Comments ({ flightNumber }) {
+
+  const [flightNum, getComments] = useState(flightNumber)
+  const [viewComments, toggleComments] = useState('none')
+
+  async function getData() {
+  const query = `{
+    launchCommentsByFlightNumber(flightNumber: ${flightNum}){
+      items {
+        id
+        author
+        body
+        date
+      }
+    }
+  }`
+
+  const commentsEndpoint = 'https://pb3c6uzk5zhrzbcuhssogcpq74.appsync-api.us-east-1.amazonaws.com/graphql'
+
+  const graphQLClient = new GraphQLClient(commentsEndpoint, {
+    headers: {
+      'x-api-key': 'da2-tadwcysgfbgzrjsfmuf7t4huui'
+    }
+  })
+
+  const data = await graphQLClient.request(query)
+  console.log(data)
+  }
+
+  return(
+    <button type='button' onClick={() => getComments(flightNum, getData())}>View Comments</button>
+    // Map over data.items for each author, body, and date (Don't forget to parse the date)
+    // Render an error if there are no comments available (there are no comments up to #9 or so)
+  )
+}
+
+
+/*
+ Create a new component for video renderer to parse url
+Component will live inside launches, will take the parent URL from the query and parse/change it before feeding it to the component.
+Component will take parsed/transformed URL from the 'watch?v=' to 'embed/' and then render the <video> tag.
+Not sure if these will autoplay, may have to use YouTube's iFrame API if they autoplay (Because autoplay is awful) https://developers.google.com/youtube/iframe_api_reference */
+
 
 export default function App() {
   const { data, loading } = useGraphQL(launchesQuery);
