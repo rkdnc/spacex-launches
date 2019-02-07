@@ -86,12 +86,33 @@ function Launches({ launches }) {
 }
 
 function Launch({ launch }) {
+
+  const [flightNumber, setFlightNumber] = useState(1)
   const launchIcon = launch.launch_success ? (
     <i className="icon mdi mdi-rocket" />
   ) : (
     <i className="icon mdi mdi-bomb" />
   );
 
+  async function query() {
+    const endpoint = 'https://pb3c6uzk5zhrzbcuhssogcpq74.appsync-api.us-east-1.amazonaws.com/graphql'
+
+    const graphQLClient = new GraphQLClient(endpoint, {
+      headers: {
+        'x-api-key': 'da2-tadwcysgfbgzrjsfmuf7t4huui'
+      }
+    })
+
+    const query = `{
+      LaunchCommentsByFlightNumber {
+        flightNumber: {flightNumber}
+      }
+    }`
+
+    const data = await graphQLClient.request(query)
+    console.log(JSON.stringify(data))
+  }
+  query()
   return (
     <li className="timeline-item timeline-item-detailed right">
       <div className="timeline-content timeline-type file">
@@ -108,6 +129,11 @@ function Launch({ launch }) {
         </div>
         <div className="timeline-summary">
           <p>{launch.details}</p>
+          {/* For the video embedding, we need to parse the video URL.
+          YouTube will not allow any videos to be played that aren't the embedded link,
+          and the SpaceX API only returnd the regular video title.
+          We have to replace 'watch?v=' with 'embed/' or just parse the ID from the query. */}
+          <div className="comment-header">View Comments</div>
         </div>
       </div>
     </li>
