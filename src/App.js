@@ -4,7 +4,7 @@ import { GraphQLClient } from 'graphql-request';
 import { useEffect, useState } from 'react';
 
 const launchesQuery = `{
-  launches {
+  launches(sort: "launch_date_utc", order: "ASC") {
     id
     launch_success
     mission_name
@@ -75,7 +75,7 @@ function Launches({ launches }) {
     <ul data-testid="launches" className="timeline timeline-variant">
       {Object.keys(launchesByDate).map(launchDate => (
         <span key={launchDate}>
-          <li key={launchDate} className="timeline-month">{launchDate}</li>
+          <li key={launchDate} className="timeline-month" >{launchDate}</li>
           {launchesByDate[launchDate].map(launch => (
             <Launch key={launch.id} launch={launch} />
           ))}
@@ -93,7 +93,7 @@ function Launch({ launch }) {
   );
 
   return (
-    <li className="timeline-item timeline-item-detailed right">
+    <li id='launchItem' className="timeline-item timeline-item-detailed">
       <div className="timeline-content timeline-type file">
         <div className="timeline-icon">{launchIcon}</div>
 
@@ -112,7 +112,7 @@ function Launch({ launch }) {
           YouTube will not allow any videos to be played that aren't the embedded link,
           and the SpaceX API only returnd the regular video title.
           We have to replace 'watch?v=' with 'embed/' or just parse the ID from the query. */}
-          <Comments flightNumber={launch.id} />
+          {/* <Comments flightNumber={launch.id} /> */}
         </div>
       </div>
     </li>
@@ -122,14 +122,15 @@ function Launch({ launch }) {
 // Create a new Component for comments
 /* Component will live inside Launch component, will take the flight number from the parent and query the API for the corresponding comments */
 
-function Comments ({ flightNumber }) {
+// Need to re-write all of this, this is not as functional as I'd hoped.
 
-  const [flightNum, getComments] = useState(flightNumber)
-  const [viewComments, toggleComments] = useState('none')
+ /*function Comments ({ flightNumber }) {
 
-  async function getData() {
+  const [flightNum, setComments] = useState(flightNumber)
+
+  function getData() {
   const query = `{
-    launchCommentsByFlightNumber(flightNumber: ${flightNum}){
+    launchCommentsByFlightNumber(flightNumber: ${flightNumber}){
       items {
         id
         author
@@ -147,16 +148,18 @@ function Comments ({ flightNumber }) {
     }
   })
 
-  const data = await graphQLClient.request(query)
+  const data =  graphQLClient.request(query).then( data => {
+    setComments(data.launchCommentsByFlightNumber.items)
+  })
   console.log(data)
   }
 
   return(
-    <button type='button' onClick={() => getComments(flightNum, getData())}>View Comments</button>
+    <button type='button' onClick={() => setComments(flightNum, getData())}>View Comments</button>
     // Map over data.items for each author, body, and date (Don't forget to parse the date)
     // Render an error if there are no comments available (there are no comments up to #9 or so)
   )
-}
+} */
 
 
 /*
