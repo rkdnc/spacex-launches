@@ -10,7 +10,3 @@
 .comment-header:hover {
   background-color: #c5c2c2;
 }
-
-/* #launchItem { position: relative; } */
-#launchItem div:nth-child(even) { float: right; clear: right; }
-#launchItem div:nth-child(odd) { float: left; clear: left; }
