@@ -20,49 +20,16 @@ You can fork this repository and commit your changes there, then open up a pull 
 
 We plan to review up until ~Feb 12th, but let us know if you need more time.
 
-## Installation
 
-You should be able to checkout this project and run `yarn` (if you have it!) or `npm install` to install the dependencies. You will need node v6+ to run this application. From there, simply run `yarn start` or `npm start` and then open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-## Comments API
+## Applicant's notes
 
-We've built a custom GraphQL API containing comments on each launch (_except the early ones_), pulled from the Reddit API. The API Endpoint is [https://pb3c6uzk5zhrzbcuhssogcpq74.appsync-api.us-east-1.amazonaws.com/graphql](https://pb3c6uzk5zhrzbcuhssogcpq74.appsync-api.us-east-1.amazonaws.com/graphql).
+So I've encountered an error with React that doesn't have a useful error message, that has roadblocked  me for the past two days. The app won't compile due to this error message: `Objects are not valid as a React child (found: [object Promise]). If you meant to render a collection of children, use an array instead.`, pointing to line 32 in `App.js` (where the state is set by graphQL), but the vast majority of the uncommented code is the same as the initial repository, so I'm at a loss with the little time I have left. I also didn't want to refactor the entire app to how I write React apps, because I felt it would show poorly in a 'team environment' to completely restructure the code base for my own personal success.
 
-We're hoping the comments will look [something like this](https://i.imgur.com/rBkl87E.png).
+- Comments API was something I had some groundwork down, but was running into issues with the `useEffect()` hook throwing errors before the component rendered. Hooks are super neat and I really enjoyed using them, though. You can find a commented out component on line 125.
 
-The schema for the SpaceX Comments GraphQL API is available [here](https://github.com/thoughtindustries/spacex-launches/blob/9cfcea596993aafccbeb12bec7e2d134b447a7ca/spacex-comments.graphql).
+- Launch Order was pretty easy, once I read the GraphQL documentation to figure out how to set the results to sort. GraphQL is very neat, I enjoyed learning about it and would like to use it in future projects (or at Thought Industries, assuming all goes well).
 
-You'll need to authenticate with this API by specifying an API Key in the header as `x-api-key`, for example:
+- Keys error was a simple fix, when I was learning React in my bootcamp I had the same error so I knew the quickest solution was to add a key to every child component.
 
-```bash
-curl 'https://pb3c6uzk5zhrzbcuhssogcpq74.appsync-api.us-east-1.amazonaws.com/graphql' -H 'x-api-key: APIKEYHERE' -H 'Content-Type: application/json' --data-binary '{"query":"{\n  launchCommentsByFlightNumber(flightNumber: 12) {\n    items {\n      id\n      author\n      body\n      date\n    }\n  }\n}"}'
-```
-
-We're using [graphql-request](https://github.com/prisma/graphql-request) which can probably help you out here.
-
-The current key is: `da2-tadwcysgfbgzrjsfmuf7t4huui`. It expires Tue, 12 Feb 2019 01:00:00 GMT.
-
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm start` / `yarn start`
-
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
-
-### `npm test` / `yarn test`
-
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-## Learn More
-
-This project was bootstrapped with `create-react-app`, so you can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/). Be sure to check out [hooks](https://reactjs.org/docs/hooks-intro.html).
-
-Don't hesitate to ask any questions!
+- Video API was a tricky one that I spent a *lot* of time on, mostly with trying to render just *a* video. There are some notes in `App.js` starting at line 163, but the overall gist is that the API doesn't serve just the video's ID, but the entire *watchable* video URL, not the *embeddable* version. YouTube doesn't allow you to embed videos without the *embeddable* URL, which is the same URl with `/watch?v={videoID}` being replaced by `/embed/{videoID}`, so I was trying to parse the URL for the last 11 characters of the URL to grab the ID and use it as a prop for a `<video>` tag, but React's hooks also threw errors with `useEffect()` again. Hooks are great, but I think I need to learn more about them.

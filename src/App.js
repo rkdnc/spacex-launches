@@ -2,7 +2,6 @@ import React from 'react';
 import './App.css';
 import { GraphQLClient } from 'graphql-request';
 import { useEffect, useState } from 'react';
-
 const launchesQuery = `{
   launches(sort: "launch_date_utc", order: "ASC") {
     id
