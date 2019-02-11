@@ -2,7 +2,6 @@ import React from 'react';
 import './App.css';
 import { GraphQLClient } from 'graphql-request';
 import { useEffect, useState } from 'react';
-import { render } from 'react-testing-library';
 
 const launchesQuery = `{
   launches(sort: "launch_date_utc", order: "ASC") {
@@ -81,7 +80,7 @@ function Launches({ launches }) {
         <span key={launchDate}>
           <li key={launchDate} className="timeline-month" >{launchDate}</li>
           {launchesByDate[launchDate].map(launch => (
-            <Launch key={launch.id} launch={launch} />
+            <Launch key={launch.flight_number} launch={launch} />
           ))}
         </span>
       ))}
@@ -90,14 +89,6 @@ function Launches({ launches }) {
 }
 
 async function Launch({ launch }) {
-
-  const [videoUrl, setUrl] = useState(launch.links.video_link);
-
-  useEffect(() => {
-    const urlArr = launch.links.video_link.slice(-11);
-    console.log(urlArr)
-    // setUrl('https://www.youtube.com/embed/' + urlArr[1]);
-  })
 
   const launchIcon = launch.launch_success ? (
     <i className="icon mdi mdi-rocket" />
@@ -121,12 +112,6 @@ async function Launch({ launch }) {
         </div>
         <div className="timeline-summary">
           <p>{launch.details}</p>
-          {/* <VideoEmbed videoLink={videoUrl} /> */}
-          {/* For the video embedding, we need to parse the video URL.
-          YouTube will not allow any videos to be played that aren't the embedded link,
-          and the SpaceX API only returnd the regular video title.
-          We have to replace 'watch?v=' with 'embed/' or just parse the ID from the query. */}
-          {/* <Comments flightNumber={launch.id} /> */}
         </div>
       </div>
     </li>
@@ -178,19 +163,10 @@ async function Launch({ launch }) {
 
 /*
  Create a new component for video renderer to parse url
-Component will live inside launches, will take the parent URL from the query and parse/change it before feeding it to the component.
+Component will live inside launches, will take the parent URL from the query and parse it before feeding it to the component.
 Component will take parsed/transformed URL from the 'watch?v=' to 'embed/' and then render the <video> tag.
-Not sure if these will autoplay, may have to use YouTube's iFrame API if they autoplay (Because autoplay is awful) https://developers.google.com/youtube/iframe_api_reference */
-
-function VideoEmbed(videoLink) {
-  
-
-  return (
-    <div>
-      <video src={videoLink} type="video/webm"></video>
-    </div>
-  )
-}
+Not sure if these will autoplay, may have to use YouTube's iFrame API if they autoplay (Because autoplay is awful)
+ https://developers.google.com/youtube/iframe_api_reference */
 
 export default function App() {
   const { data, loading } = useGraphQL(launchesQuery);
